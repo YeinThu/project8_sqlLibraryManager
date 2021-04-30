@@ -29,7 +29,7 @@ router.get('/new', (req, res) => {
 });
 
 /* POST add a new book to the database */
-router.post('/', asyncHandler(async (req, res) => {
+router.post('/new', asyncHandler(async (req, res) => {
   let book;
   try {
     book = await Book.create(req.body);
