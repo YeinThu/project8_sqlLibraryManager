@@ -16,11 +16,16 @@ function asyncHandler(cb) {
 }
 
 /* GET display full list of books. */
-router.get('/', asyncHandler(async (req, res) => {
+router.get('/', asyncHandler(async (req, res, next) => {
   const books = await Book.findAll({
     order: [["title", "ASC"]] // Finds and displays all books in ascending "title" order
   });
-  res.render('books/all_books', { title: "Books", books });
+  if (books) {
+    res.render('books/all_books', { title: "Books", books });
+  }
+  else {
+    next();
+  }
 }));
 
 /* GET display the create new book form */
@@ -47,14 +52,15 @@ router.post('/new', asyncHandler(async (req, res) => {
 }));
 
 /* GET display individual book detail form */
-router.get('/:id', asyncHandler(async (req, res) => {
+router.get('/:id', asyncHandler(async (req, res, next) => {
   const book = await Book.findByPk(req.params.id); // Find by Primary Key or Id
   if (book) {
     res.render('books/book_detail', { title: book.title, book });
   }
   else {
-    res.sendStatus(404);
-  }
+    const newErr = new Error();
+    next(newErr);
+  } 
 }));
 
 /* POST updates book info in the database */
